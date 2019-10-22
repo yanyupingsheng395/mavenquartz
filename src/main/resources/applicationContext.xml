@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          ">
+
+    <!-- 注册自定义任务 -->
+    <bean id="myJob" class="demo.test.job"></bean>
+    <bean id="myJob2" class="demo.test.job2"></bean>
+    <!-- 配置任务详情 -->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 注入目标对象 -->
+        <property name="targetObject">
+            <ref bean="myJob"/>
+        </property>
+        <!-- 注入目标方法 -->
+        <property name="targetMethod" value="execute"/>
+    </bean>
+    <!-- 配置触发器 -->
+    <bean id="myTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!-- 注入作业详情JobDetail -->
+        <property name="jobDetail" ref="jobDetail"/>
+        <!-- 通过cron表达式指定什么时间点触发 -->
+        <property name="cronExpression">
+            <value>0/5 * * * * ?</value>
+        </property>
+    </bean>
+
+    <bean id="jobDetail2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 注入目标对象 -->
+        <property name="targetObject">
+            <ref bean="myJob2"/>
+        </property>
+        <!-- 注入目标方法 -->
+        <property name="targetMethod" value="execute"/>
+    </bean>
+    <!-- 配置触发器 -->
+    <bean id="myTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!-- 注入作业详情JobDetail -->
+        <property name="jobDetail" ref="jobDetail2"/>
+        <!-- 通过cron表达式指定什么时间点触发 -->
+        <property name="cronExpression">
+            <value>0/2 * * * * ?</value>
+        </property>
+    </bean>
+
+    <!-- 注册调度工厂 -->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="myTrigger"/>
+                <ref bean="myTrigger2"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
